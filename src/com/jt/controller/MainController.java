@@ -1,12 +1,12 @@
 package com.jt.controller;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashMap;
+import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
 
 import org.json.JSONException;
-import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.ModelAttribute;
@@ -40,12 +40,30 @@ public class MainController {
 		Object response = uservice.validateUser(user.getUname(), user.getPwd());
 		
 		if(response.getClass().equals(User.class)){
+			HttpSession session = request.getSession();
+			
 			user = (User) response;
-			modelAndView = new ModelAndView("landing", "userDetails", user).addObject("appres", appservice.fetchAllApps(user));
+			session.setAttribute("loggedInUser", user);
+
+			modelAndView = new ModelAndView("landing","appres",appservice.fetchAllApps(user)).addObject("userDetails", user);
 		}else{
 			modelAndView = new ModelAndView("index", "credentials", new User());
 		}
 		return modelAndView;
+	}
+	
+	@RequestMapping(value = "/add_pos.htm", method = RequestMethod.GET)
+	public ModelAndView newPositionPage(HttpServletRequest request) {
+		HttpSession session = request.getSession();
+		User u = (User) session.getAttribute("loggedInUser");
+		
+		Map<String, Object> models = new HashMap<String, Object>();
+		
+		models.put("resumes", uservice.getAllResumes(u));
+		models.put("positionDetails", new Application());
+		models.put("userinfo", u);
+		
+		return new ModelAndView("addpos").addAllObjects(models);
 	}
 	
 }

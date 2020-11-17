@@ -8,6 +8,7 @@ import org.hibernate.SessionFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
+import com.jt.entity.Resume;
 import com.jt.entity.User;
 
 @Repository
@@ -38,5 +39,25 @@ public class UserDAO {
 		}
 		
 		return response;
-	}	
+	}
+	
+	public List<Resume> getAllResumes(User user){
+		List<Resume> uList = null;
+		
+		try
+		{
+			Session session = sessionf.openSession();
+			Query q = session.createQuery("from Resume where user_id='"+user.getUserid()+"'");
+			uList = q.list();
+			
+			session.close();
+		}
+		catch(Exception e)
+		{
+			e.printStackTrace();
+		}
+		
+		return uList;
+	}
+	
 }

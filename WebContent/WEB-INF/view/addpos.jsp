@@ -1,5 +1,9 @@
+<%@page import="com.jt.entity.User"%>
 <%@ page language="java" contentType="text/html; charset=ISO-8859-1" pageEncoding="ISO-8859-1"%>
+
+<%@ taglib prefix="f" uri="http://www.springframework.org/tags/form" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jstl/core_rt" %>
+
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html>
 <head>
@@ -7,22 +11,34 @@
 <title>Insert title here</title>
 </head>
 <body>
+<%
+	request.setAttribute("curr_user",(User) request.getAttribute("userinfo"));
+%>
 <center>
 	<h3> Let us know the position where you've applied! </h3>
 	
-	<form action="" method="POST">
+	<f:form action="" modelAttribute="positionDetails" method="POST">
 	
-		Company: <input type="text" name="cname" placeholder="Enter Company Name.."/> <br>
-		Date: <input type="text" name="app_date" placeholder="Date.."/> <br>
-		URL: <input type="text" name="app_url" placeholder="Enter URL.."/> <br>
-		Used Email: <input type="text" name="app_email" placeholder="Which email did you use?.."/> <br>
-		Resume: <input type="text" name="app_resume" placeholder="Which resume did you use?.."/> <br>
-		Referral: <input type="text" name="referral" placeholder="Did you have referral?.."/> <br>
-		 
+		<label> Company: </label> <f:input path="job.company" type="text" name="cname"/> <br>
+		<label> Date:</label> <f:input path="date" type="text" name="app_date"/> <br>
+		<label> URL: </label> <f:input path="job.url" type="text" name="app_url"/> <br>
+		<label> Used Email: </label> <f:input path="user.another_email" type="text" name="app_email" value="${curr_user.primary_email}"/> <br>
+		
+		<label> Resume: </label> <f:select path="resume.res_id">
+									<c:forEach items="${resumes}" var="q">
+										<f:option value="${q.res_id }"> ${q.res_name }</f:option>
+									</c:forEach>
+								 </f:select>
 		<br>
 		
-		<input type="submit" value="Register!">	
-	</form>
+		<label> Referral: </label> <f:radiobutton path="referral"  value="0" label="No Referral"/> 
+								   <f:radiobutton path="referral" value="1" label="Referral"/> 
+								   
+		<br><br><br>
+		
+		<input type="submit" value="Register!">
+	</f:form>
+	
 </center>
 </body>
 </html>

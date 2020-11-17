@@ -39,9 +39,6 @@ public class User {
 	@Column
 	private String dob;
 	
-	@Column
-	private String resume;
-
 	public int getUserid() {
 		return userid;
 	}
@@ -113,13 +110,4 @@ public class User {
 	public void setDob(String dob) {
 		this.dob = dob;
 	}
-
-	public String getResume() {
-		return resume;
-	}
-
-	public void setResume(String resume) {
-		this.resume = resume;
-	}
-	
 }

@@ -21,6 +21,7 @@
 	appStages.add("Reject");
 
 	request.setAttribute("appStages", appStages);
+	
 %>
 <body>
 	<center>
@@ -56,7 +57,7 @@
 		</table>
 	</center>
 	<center>
-		<a href=""> Apply anywhere? Let us know! </a>
+		<a href="add_pos.htm"> Applied anywhere? Let us know! </a>
 	</center>
 </body>
 </html>

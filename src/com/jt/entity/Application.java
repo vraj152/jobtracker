@@ -2,7 +2,6 @@ package com.jt.entity;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.ForeignKey;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -27,9 +26,18 @@ public class Application {
 	@Column
 	private String status;
 	
-	@Column
-	private String resume;
+	@ManyToOne
+	@JoinColumn(name="res_id")
+	Resume resume;
 	
+	public Resume getResume() {
+		return resume;
+	}
+
+	public void setResume(Resume resume) {
+		this.resume = resume;
+	}
+
 	@ManyToOne
 	@JoinColumn(name = "userid")
 	User user;
@@ -70,14 +78,6 @@ public class Application {
 		this.status = status;
 	}
 
-	public String getResume() {
-		return resume;
-	}
-
-	public void setResume(String resume) {
-		this.resume = resume;
-	}
-
 	public User getUser() {
 		return user;
 	}
@@ -93,4 +93,5 @@ public class Application {
 	public void setJob(Job job) {
 		this.job = job;
 	}
+	
 }

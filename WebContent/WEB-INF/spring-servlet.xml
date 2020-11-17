@@ -30,6 +30,7 @@
 				<value>com.jt.entity.User</value>
 				<value>com.jt.entity.Job</value>
 				<value>com.jt.entity.Application</value>
+				<value>com.jt.entity.Resume</value>
 			</list>
 		</property>
 		<property name="hibernateProperties">
