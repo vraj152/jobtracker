@@ -22,4 +22,8 @@ public class UserService {
 	public List<Resume> getAllResumes(User user){
 		return udao.getAllResumes(user);
 	}
+	
+	public void updateUser(User user){
+		udao.updateUser(user);
+	}
 }

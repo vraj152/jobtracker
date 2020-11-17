@@ -17,6 +17,14 @@ public class Application {
 	@GeneratedValue(strategy=GenerationType.AUTO)
 	private int appid;
 	
+	public String getEmail_used() {
+		return email_used;
+	}
+
+	public void setEmail_used(String email_used) {
+		this.email_used = email_used;
+	}
+
 	@Column
 	private int referral;
 	
@@ -26,18 +34,13 @@ public class Application {
 	@Column
 	private String status;
 	
+	@Column
+	private String email_used;
+	
 	@ManyToOne
 	@JoinColumn(name="res_id")
 	Resume resume;
 	
-	public Resume getResume() {
-		return resume;
-	}
-
-	public void setResume(Resume resume) {
-		this.resume = resume;
-	}
-
 	@ManyToOne
 	@JoinColumn(name = "userid")
 	User user;
@@ -92,6 +95,14 @@ public class Application {
 
 	public void setJob(Job job) {
 		this.job = job;
+	}
+	
+	public Resume getResume() {
+		return resume;
+	}
+
+	public void setResume(Resume resume) {
+		this.resume = resume;
 	}
 	
 }

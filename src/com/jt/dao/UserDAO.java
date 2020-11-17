@@ -5,6 +5,7 @@ import java.util.List;
 import org.hibernate.Query;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
+import org.hibernate.Transaction;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
@@ -58,6 +59,21 @@ public class UserDAO {
 		}
 		
 		return uList;
+	}
+	
+	public void updateUser(User user){
+		try 
+		{
+			Session session = sessionf.openSession();
+			Transaction tr = session.beginTransaction();
+			session.update(user);
+			tr.commit();
+			session.close();
+		}
+		catch (Exception e)
+		{
+			System.out.println(e.getMessage());
+		}
 	}
 	
 }

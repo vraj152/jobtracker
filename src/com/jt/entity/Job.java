@@ -32,6 +32,9 @@ public class Job {
 	
 	@Column
 	private String url;
+	
+	@Column
+	private String location;
 
 	public int getJobid() {
 		return jobid;
@@ -87,5 +90,13 @@ public class Job {
 
 	public void setUrl(String url) {
 		this.url = url;
+	}
+
+	public String getLocation() {
+		return location;
+	}
+
+	public void setLocation(String location) {
+		this.location = location;
 	}
 }

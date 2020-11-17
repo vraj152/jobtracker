@@ -17,12 +17,12 @@
 <center>
 	<h3> Let us know the position where you've applied! </h3>
 	
-	<f:form action="" modelAttribute="positionDetails" method="POST">
+	<f:form action="save_job.htm" modelAttribute="positionDetails" method="POST">
 	
 		<label> Company: </label> <f:input path="job.company" type="text" name="cname"/> <br>
 		<label> Date:</label> <f:input path="date" type="text" name="app_date"/> <br>
 		<label> URL: </label> <f:input path="job.url" type="text" name="app_url"/> <br>
-		<label> Used Email: </label> <f:input path="user.another_email" type="text" name="app_email" value="${curr_user.primary_email}"/> <br>
+		<label> Used Email: </label> <f:input path="email_used" type="text" name="app_email" value="${curr_user.primary_email}"/> <br>
 		
 		<label> Resume: </label> <f:select path="resume.res_id">
 									<c:forEach items="${resumes}" var="q">
