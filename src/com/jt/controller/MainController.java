@@ -1,6 +1,10 @@
 package com.jt.controller;
 
+import java.text.DateFormat;
+import java.text.Format;
+import java.text.SimpleDateFormat;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -17,6 +21,7 @@ import org.springframework.web.servlet.ModelAndView;
 
 import com.jt.entity.Application;
 import com.jt.entity.Job;
+import com.jt.entity.Resume;
 import com.jt.entity.User;
 import com.jt.service.ApplicationService;
 import com.jt.service.JobService;
@@ -50,7 +55,6 @@ public class MainController {
 			
 			user = (User) response;
 			session.setAttribute("loggedInUser", user);
-
 			modelAndView = new ModelAndView("landing","appres",appservice.fetchAllApps(user)).addObject("userDetails", user);
 		}else{
 			modelAndView = new ModelAndView("index", "credentials", new User());
@@ -62,7 +66,6 @@ public class MainController {
 	public ModelAndView newPositionPage(HttpServletRequest request) {
 		HttpSession session = request.getSession();
 		User u = (User) session.getAttribute("loggedInUser");
-		System.out.println(u);
 		
 		Map<String, Object> models = new HashMap<String, Object>();
 		
@@ -105,10 +108,62 @@ public class MainController {
 		app.setJob(currentJob);
 		app.setStatus("Applied");
 		app.setUser(u);
-		session.setAttribute("loggedInUser", u);
+		
+		if(session.getAttribute("loggedInUser")!=null){
+			session.removeAttribute("loggedInUser");
+			session.setAttribute("loggedInUser", u);
+		}
 		
 		appservice.insertPosition(app);
 		
 		return new ModelAndView("landing","appres",appservice.fetchAllApps(u)).addObject("userDetails", u);
 	}
+	
+	@RequestMapping(value = "/personalDetail.htm", method = RequestMethod.GET)
+	public ModelAndView personalDetailPage(HttpServletRequest request) {
+		HttpSession session = request.getSession();
+		User u = (User) session.getAttribute("loggedInUser");
+		
+		return new ModelAndView("personalDetails","userInfo",u);
+	}
+	
+	@RequestMapping(value = "/updateUser.htm", method = RequestMethod.POST)
+	public ModelAndView updateDetail(@ModelAttribute User user, HttpServletRequest request) {
+		HttpSession session = request.getSession();
+		User existingDetail = (User) session.getAttribute("loggedInUser"); 
+		
+		user.setAnother_email(existingDetail.getAnother_email());
+		user.setUserid(existingDetail.getUserid());
+		user.setPhoto(existingDetail.getPhoto());
+		user.setUname(existingDetail.getUname());
+		
+		uservice.updateUser(user);
+		
+		session.removeAttribute("loggedInUser");
+		session.setAttribute("loggedInUser", user);
+		
+		return new ModelAndView("landing","appres",appservice.fetchAllApps(user)).addObject("userDetails", user);
+	}
+	
+	@RequestMapping(value = "/manageResume.htm", method = RequestMethod.GET)
+	public ModelAndView manageResumePage(HttpServletRequest request) {
+		HttpSession session = request.getSession();
+		User u = (User) session.getAttribute("loggedInUser");
+		
+		return new ModelAndView("manageResume","resumes",uservice.getAllResumes(u)).addObject("newResume", new Resume());
+	}
+	
+	@RequestMapping(value = "/saveResume.htm", method = RequestMethod.POST)
+	public ModelAndView addNewResume(@ModelAttribute Resume resume, HttpServletRequest request) {
+		HttpSession session = request.getSession();
+		User u = (User) session.getAttribute("loggedInUser");
+		
+		resume.setRes_date(new SimpleDateFormat("dd/MM/yyyy").format(new Date()));
+		resume.setUser(u);
+		
+		uservice.addNewResume(resume);
+		
+		return new ModelAndView("manageResume","resumes",uservice.getAllResumes(u)).addObject("newResume", new Resume());
+	}
+	
 }

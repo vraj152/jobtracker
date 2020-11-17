@@ -76,4 +76,15 @@ public class UserDAO {
 		}
 	}
 	
+	public void addNewResume(Resume res){
+		try{
+			Session session = sessionf.openSession();
+			Transaction tr = session.beginTransaction();
+			session.save(res);
+			tr.commit();
+			session.close();
+		}catch (Exception e){
+			System.out.println(e.getMessage());
+		}
+	}
 }

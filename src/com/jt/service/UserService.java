@@ -26,4 +26,8 @@ public class UserService {
 	public void updateUser(User user){
 		udao.updateUser(user);
 	}
+	
+	public void addNewResume(Resume res){
+		udao.addNewResume(res);
+	}
 }

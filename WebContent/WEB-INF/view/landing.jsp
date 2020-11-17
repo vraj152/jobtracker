@@ -67,8 +67,8 @@
 	<br>
 	
 	<center>
-		<a href=""> Update Personal Details. </a> <br>
-		<a href=""> Manage Resumes </a>
+		<a href="personalDetail.htm"> Update Personal Details. </a> <br>
+		<a href="manageResume.htm"> Manage Resumes </a>
 	</center>
 	
 </body>
