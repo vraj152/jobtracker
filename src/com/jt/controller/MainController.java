@@ -1,7 +1,5 @@
 package com.jt.controller;
 
-import java.text.DateFormat;
-import java.text.Format;
 import java.text.SimpleDateFormat;
 import java.util.Arrays;
 import java.util.Date;
@@ -166,4 +164,14 @@ public class MainController {
 		return new ModelAndView("manageResume","resumes",uservice.getAllResumes(u)).addObject("newResume", new Resume());
 	}
 	
+	@RequestMapping(value = "/signup.htm", method = RequestMethod.GET)
+	public ModelAndView signUpPage(HttpServletRequest request) {
+		return new ModelAndView("signup","newuser",new User());
+	}
+	
+	@RequestMapping(value = "/saveUser.htm", method = RequestMethod.POST)
+	public ModelAndView saveUser(@ModelAttribute User user, HttpServletRequest request) {
+		uservice.addNewUser(user);
+		return new ModelAndView("index","credentials",new User());
+	}
 }

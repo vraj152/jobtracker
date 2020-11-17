@@ -30,4 +30,8 @@ public class UserService {
 	public void addNewResume(Resume res){
 		udao.addNewResume(res);
 	}
+	
+	public void addNewUser(User user){
+		udao.addNewUser(user);
+	}
 }

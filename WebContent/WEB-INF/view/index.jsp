@@ -23,12 +23,10 @@
 <br>
 <br>
 
-<!-- 
-	<center>
-		New User? Click here to Sign up!
-		<a href="signup.jsp"> Sign Up!</a>
-	</center>
- -->
+<center>
+	<h2> New User? Click here to Sign up! </h2>
+	<br> <a href="signup.htm"> Sign Up!</a> <br>
+</center>
 
 </body>
 </html>

@@ -87,4 +87,16 @@ public class UserDAO {
 			System.out.println(e.getMessage());
 		}
 	}
+	
+	public void addNewUser(User user){
+		try{
+			Session session = sessionf.openSession();
+			Transaction tr = session.beginTransaction();
+			session.save(user);
+			tr.commit();
+			session.close();
+		}catch (Exception e){
+			System.out.println(e.getMessage());
+		}
+	}
 }
