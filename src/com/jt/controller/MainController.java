@@ -20,7 +20,7 @@ import com.jt.service.ApplicationService;
 import com.jt.service.UserService;
 
 @Controller
-public class UserController {
+public class MainController {
 
 	@Autowired
 	UserService uservice;
@@ -41,7 +41,7 @@ public class UserController {
 		
 		if(response.getClass().equals(User.class)){
 			user = (User) response;
-			modelAndView = new ModelAndView("addpos", "userDetails", user).addObject("apps", appservice.fetchAllApps(user));
+			modelAndView = new ModelAndView("landing", "userDetails", user).addObject("appres", appservice.fetchAllApps(user));
 		}else{
 			modelAndView = new ModelAndView("index", "credentials", new User());
 		}

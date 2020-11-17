@@ -19,27 +19,20 @@ public class ApplicationDAO {
 	@Autowired
 	SessionFactory sessionf;
 
-	public JSONObject fetchAllApps(User user){
-		JSONObject res = new JSONObject();
+	public List fetchAllApps(User user){
+		List<Application> response = null;
 		try
 		{
 			Session session = sessionf.openSession();
 			Query q = session.createQuery("from Application where userid='"+user.getUserid()+"'");
-			List<Application> appList = q.list();
-			if(appList.size()==0){
-				res.put("message","No Applications");
-			}else{
-				res.put("message","Application Found");
-			}
+			response = q.list();
 			
-			res.put("data",appList);
 			session.close();
 		}
 		catch(Exception e)
 		{
 			e.printStackTrace();
 		}
-		
-		return res;
+		return response;
 	}
 }
