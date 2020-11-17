@@ -33,6 +33,7 @@
 					<th>Position</th>
 					<th>Requisition ID</th>
 					<th>Date Applied</th>
+					<th>Resume </th>
 					<th>Status</th>
 				</tr>
 			</thead>
@@ -44,6 +45,8 @@
 						<td style="color: black"> ${q.job.position }</td>
 						<td style="color: black"> ${q.job.requisition_id }</td>
 						<td style="color: black"> ${q.date }</td>
+						<td style="color: black"> <a href="${q.resume.res_url }"> ${q.resume.res_name } </a></td>
+						
 						<td>
 							 <select>
 							 	 <a:forEach items="${appStages}" var="stage">
@@ -56,8 +59,17 @@
 			</tbody>
 		</table>
 	</center>
+	<br><br>
 	<center>
 		<a href="add_pos.htm"> Applied anywhere? Let us know! </a>
 	</center>
+	<br>
+	<br>
+	
+	<center>
+		<a href=""> Update Personal Details. </a> <br>
+		<a href=""> Manage Resumes </a>
+	</center>
+	
 </body>
 </html>

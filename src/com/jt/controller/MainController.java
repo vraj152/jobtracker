@@ -105,9 +105,10 @@ public class MainController {
 		app.setJob(currentJob);
 		app.setStatus("Applied");
 		app.setUser(u);
+		session.setAttribute("loggedInUser", u);
 		
 		appservice.insertPosition(app);
 		
-		return new ModelAndView();
+		return new ModelAndView("landing","appres",appservice.fetchAllApps(u)).addObject("userDetails", u);
 	}
 }
