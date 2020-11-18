@@ -237,7 +237,7 @@ public class MainController {
 		HttpSession session = request.getSession();
 		User user = (User) session.getAttribute("loggedInUser");
 		
-		Application app = (Application) session.getAttribute(request.getParameter("job"));
+		Application app = appservice.findApplication(Integer.parseInt(request.getParameter("app_id")));
 		String new_stage = request.getParameter("job_stage");
 		
 		app.setStatus(new_stage);

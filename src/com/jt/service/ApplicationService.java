@@ -27,4 +27,8 @@ public class ApplicationService {
 	public void updateApplication(Application app){
 		appdao.updateApplication(app);
 	}
+	
+	public Application findApplication(int app_id){
+		return appdao.findApplication(app_id);
+	}
 }

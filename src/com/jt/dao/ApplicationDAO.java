@@ -60,4 +60,21 @@ public class ApplicationDAO {
 		}
 	}
 	
+	public Application findApplication(int app_id){
+		Application app = null;
+		try{
+			Session session = sessionf.openSession();
+			Query q = session.createQuery("from Application where appid='"+app_id+"'");
+			List<Application> appList = q.list();
+			
+			for (Application a: appList) {
+				app = a;
+			}
+			session.close();
+		}catch(Exception e){
+			e.printStackTrace();
+		}
+		return app;
+	}
+	
 }

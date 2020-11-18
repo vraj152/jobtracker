@@ -50,16 +50,12 @@
 						<td style="color: black"> ${q.job.location }</td>
 						<td>
 							 <form action="changestatus.htm" method="POST">
-							 	 <a:set var="test" value="${q }"/>
-							 	 <%
-							 	 	session.setAttribute(pageContext.getAttribute("test").toString(),pageContext.getAttribute("test"));
-							 	 %>
-								 <select name="job_stage" onchange="this.form.submit()">
+							 	 <select name="job_stage" onchange="this.form.submit()">
 								 	 <a:forEach items="${appStages}" var="stage">
 						 	 			<option value="${stage}" ${stage == q.status? 'selected' : ''} > ${stage} </option>
 								 	 </a:forEach>
 								 </select>
-								 <input type="hidden" value="${q}" name="job">
+								 <input type="hidden" value="${q.appid}" name="app_id">
 							 </form> 
 						</td>
 					</tr>
