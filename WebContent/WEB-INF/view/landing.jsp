@@ -34,6 +34,7 @@
 					<th>Requisition ID</th>
 					<th>Date Applied</th>
 					<th>Resume </th>
+					<th>Location </th>
 					<th>Status</th>
 				</tr>
 			</thead>
@@ -41,18 +42,25 @@
 			<tbody>
 				<a:forEach items="${appres}" var="q">
 					<tr>
-						<td style="color: black"> ${q.job.company } </td>
+						<td style="color: black"> <a href="${q.job.url}"> ${q.job.company } </a> </td>
 						<td style="color: black"> ${q.job.position }</td>
 						<td style="color: black"> ${q.job.requisition_id }</td>
 						<td style="color: black"> ${q.date }</td>
 						<td style="color: black"> <a href="${q.resume.res_url }"> ${q.resume.res_name } </a></td>
-						
+						<td style="color: black"> ${q.job.location }</td>
 						<td>
-							 <select>
-							 	 <a:forEach items="${appStages}" var="stage">
-						 	 		<option value="${stage}" ${stage == q.status? 'selected' : ''}> ${stage} </option>
-							 	 </a:forEach>
-							 </select> 
+							 <form action="changestatus.htm" method="POST">
+							 	 <a:set var="test" value="${q }"/>
+							 	 <%
+							 	 	session.setAttribute(pageContext.getAttribute("test").toString(),pageContext.getAttribute("test"));
+							 	 %>
+								 <select name="job_stage" onchange="this.form.submit()">
+								 	 <a:forEach items="${appStages}" var="stage">
+						 	 			<option value="${stage}" ${stage == q.status? 'selected' : ''} > ${stage} </option>
+								 	 </a:forEach>
+								 </select>
+								 <input type="hidden" value="${q}" name="job">
+							 </form> 
 						</td>
 					</tr>
 				</a:forEach>

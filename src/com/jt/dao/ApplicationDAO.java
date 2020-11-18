@@ -48,4 +48,16 @@ public class ApplicationDAO {
 		}
 	}
 	
+	public void updateApplication(Application app){
+		try {
+			Session session = sessionf.openSession();
+			Transaction tr = session.beginTransaction();
+			session.update(app);
+			tr.commit();
+			session.close();
+		} catch (Exception e) {
+			System.out.println(e.getMessage());
+		}
+	}
+	
 }

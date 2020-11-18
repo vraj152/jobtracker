@@ -23,4 +23,8 @@ public class ApplicationService {
 	public void insertPosition(Application app){
 		appdao.insertPosition(app);
 	}
+	
+	public void updateApplication(Application app){
+		appdao.updateApplication(app);
+	}
 }

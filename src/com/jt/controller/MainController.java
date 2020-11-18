@@ -1,5 +1,9 @@
 package com.jt.controller;
 
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.text.SimpleDateFormat;
 import java.util.Arrays;
 import java.util.Date;
@@ -10,6 +14,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
 import org.json.JSONException;
+import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.ModelAttribute;
@@ -76,16 +81,68 @@ public class MainController {
 	
 	@RequestMapping(value = "/save_job.htm", method = RequestMethod.POST)
 	public ModelAndView saveJobDetails(@ModelAttribute Application app,HttpServletRequest request) {
+		String baseURL = "http://localhost:5000/";
+		String endPoint = "getData?";
+		JSONObject myResponse = null;
+		
+		try{
+	    	URL url = new URL(baseURL + endPoint + "url=" + app.getJob().getUrl());
+	    	HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+	    	conn.setRequestMethod("GET");
+            
+            if (conn.getResponseCode() != 200) {
+                throw new RuntimeException("Failed : HTTP Error code : " + conn.getResponseCode());
+            }
+            
+            BufferedReader in = new BufferedReader(new InputStreamReader(conn.getInputStream()));
+            String inputLine;
+            StringBuffer sb = new StringBuffer();
+            while ((inputLine = in.readLine()) != null) {
+            	sb.append(inputLine);
+            }
+            in.close();
+            
+            myResponse = new JSONObject(sb.toString());
+            conn.disconnect();
+	    }catch(Exception e){
+	    	System.out.println(e.getMessage());
+	    }
+
 		HttpSession session = request.getSession();
 		User u = (User) session.getAttribute("loggedInUser");
 		
 		Job currentJob = app.getJob();
-		currentJob.setJob_desc("SDE Position, Java");
-		currentJob.setPosition("Full Time SDE");
-		currentJob.setPosted_date("15/10/2020");
-		currentJob.setRequisition_id("2020-10");
-		currentJob.setLocation("Palo Alto, CA");
 		
+		String job_desc = "Not available";
+		String job_title = "Not available";
+		String date_posted = "Not available";
+		String req_id = "Couldn't find";
+		String location = "Not available";
+		
+		try{
+			if(myResponse!=null & myResponse.get("message").equals("Data found")){
+				job_desc = (String) myResponse.get("job_desc");
+				job_title = (String) myResponse.get("job_title");
+				
+				if(((String) myResponse.get("date_posted")).length()>0){
+					date_posted = (String) myResponse.get("date_posted");
+				}
+				
+				if(((String) myResponse.get("req_id")).length()>0){
+					req_id = (String) myResponse.get("req_id");
+				}
+				location = (String) myResponse.get("location");
+			}
+		}catch(Exception e){
+			System.out.println(e.getMessage());
+		}
+		
+		currentJob.setJob_desc(job_desc);
+		currentJob.setPosition(job_title);
+		currentJob.setPosted_date(date_posted);
+		currentJob.setLocation(location);
+		currentJob.setRequisition_id(req_id);
+
 		jservice.insertJob(currentJob);
 		
 		String temp = app.getEmail_used();
@@ -174,4 +231,20 @@ public class MainController {
 		uservice.addNewUser(user);
 		return new ModelAndView("index","credentials",new User());
 	}
+	
+	@RequestMapping(value = "/changestatus.htm", method = RequestMethod.POST)
+	public ModelAndView updateStatus(HttpServletRequest request) {
+		HttpSession session = request.getSession();
+		User user = (User) session.getAttribute("loggedInUser");
+		
+		Application app = (Application) session.getAttribute(request.getParameter("job"));
+		String new_stage = request.getParameter("job_stage");
+		
+		app.setStatus(new_stage);
+		appservice.updateApplication(app);
+		
+		return new ModelAndView("landing","appres",appservice.fetchAllApps(user)).addObject("userDetails", user);
+	}
+	
+	
 }
