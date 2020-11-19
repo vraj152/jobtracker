@@ -39,6 +39,10 @@
 		<input type="submit" value="Register!">
 	</f:form>
 	
+	<br><br><br>
+	
+	<a href="homePage.htm"> Go back to home page. </a>
+	
 </center>
 </body>
 </html>

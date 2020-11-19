@@ -8,16 +8,21 @@
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
 <title>Insert title here</title>
+<script type="text/javascript">
+	function showAlert(msg){
+		alert(msg);
+	}
+</script>
 </head>
 <body>
-
 <center>
+	<c:if test="${not empty sessionMessage}">
+		<script> showAlert("${sessionMessage}") </script>
+	</c:if>
 	<f:form action="verifyuser.htm" modelAttribute="credentials" method="POST">
-		
 		<label> Username </label>: <f:input path="uname" type="text" name="uname"/> <br>
 		<label> Password </label>: <f:input path="pwd" type="password" name="pwd"/> <br><br>
 		<input type="submit" value="Let me in!"/> <br>
-	
 	</f:form>
 </center>
 <br>

@@ -31,4 +31,8 @@ public class ApplicationService {
 	public Application findApplication(int app_id){
 		return appdao.findApplication(app_id);
 	}
+	
+	public void deleteApplication(int app_id){
+		appdao.deleteApplication(app_id);
+	}
 }

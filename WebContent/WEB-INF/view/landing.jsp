@@ -36,13 +36,14 @@
 					<th>Resume </th>
 					<th>Location </th>
 					<th>Status</th>
+					<th>Action </th>
 				</tr>
 			</thead>
 			
 			<tbody>
 				<a:forEach items="${appres}" var="q">
 					<tr>
-						<td style="color: black"> <a href="${q.job.url}"> ${q.job.company } </a> </td>
+						<td style="color: black"> <a href="${q.job.url}">${q.job.company } </a> </td>
 						<td style="color: black"> ${q.job.position }</td>
 						<td style="color: black"> ${q.job.requisition_id }</td>
 						<td style="color: black"> ${q.date }</td>
@@ -58,6 +59,9 @@
 								 <input type="hidden" value="${q.appid}" name="app_id">
 							 </form> 
 						</td>
+						<td>
+							<a href="deleteApp.htm?var=${q.appid}"> Delete </a>
+						</td>
 					</tr>
 				</a:forEach>
 			</tbody>
@@ -66,11 +70,9 @@
 	<br><br>
 	<center>
 		<a href="add_pos.htm"> Applied anywhere? Let us know! </a>
-	</center>
-	<br>
-	<br>
-	
-	<center>
+		
+		<br><br>
+		
 		<a href="personalDetail.htm"> Update Personal Details. </a> <br>
 		<a href="manageResume.htm"> Manage Resumes </a>
 	</center>

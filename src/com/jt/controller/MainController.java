@@ -42,9 +42,17 @@ public class MainController {
 	@Autowired
 	JobService jservice;
 	
-	@RequestMapping(value = {"/", "/index.htm"}, method = RequestMethod.GET)
-	public ModelAndView loginPage(HttpServletRequest request) {
-		return new ModelAndView("index","credentials",new User());
+	public static Object checkSession(HttpServletRequest request){
+		HttpSession session = request.getSession();
+		
+		if(session.getAttribute("loggedInUser")==null){
+			return false;
+		}return session.getAttribute("loggedInUser");
+	}
+	
+	public static void setSession(HttpServletRequest request, User user){
+		HttpSession session = request.getSession();
+		session.setAttribute("loggedInUser", user);
 	}
 	
 	@RequestMapping(value ="/verifyuser.htm", method = RequestMethod.POST)
@@ -54,10 +62,8 @@ public class MainController {
 		Object response = uservice.validateUser(user.getUname(), user.getPwd());
 		
 		if(response.getClass().equals(User.class)){
-			HttpSession session = request.getSession();
-			
 			user = (User) response;
-			session.setAttribute("loggedInUser", user);
+			setSession(request, user);
 			modelAndView = new ModelAndView("landing","appres",appservice.fetchAllApps(user)).addObject("userDetails", user);
 		}else{
 			modelAndView = new ModelAndView("index", "credentials", new User());
@@ -67,8 +73,11 @@ public class MainController {
 	
 	@RequestMapping(value = "/add_pos.htm", method = RequestMethod.GET)
 	public ModelAndView newPositionPage(HttpServletRequest request) {
-		HttpSession session = request.getSession();
-		User u = (User) session.getAttribute("loggedInUser");
+		Object res = checkSession(request);
+		if(res.getClass()!=User.class){
+			return new ModelAndView("index","credentials",new User()).addObject("sessionMessage","Session Timeout, please login again!");
+		}
+		User u = (User) res;
 		
 		Map<String, Object> models = new HashMap<String, Object>();
 		
@@ -108,9 +117,12 @@ public class MainController {
 	    	System.out.println(e.getMessage());
 	    }
 
-		HttpSession session = request.getSession();
-		User u = (User) session.getAttribute("loggedInUser");
-		
+		Object res = checkSession(request);
+		if(res.getClass()!=User.class){
+			return new ModelAndView("index","credentials",new User()).addObject("sessionMessage","Session Timeout, please login again!");
+		}
+		User u = (User) res;
+				
 		Job currentJob = app.getJob();
 		
 		String job_desc = "Not available";
@@ -142,8 +154,14 @@ public class MainController {
 		currentJob.setPosted_date(date_posted);
 		currentJob.setLocation(location);
 		currentJob.setRequisition_id(req_id);
-
-		jservice.insertJob(currentJob);
+		
+		Object validOp = jservice.validateJob(currentJob);
+		
+		if(validOp.getClass()!=Job.class){
+			jservice.insertJob(currentJob);
+		}else{
+			currentJob = (Job) validOp;
+		}
 		
 		String temp = app.getEmail_used();
 		
@@ -164,28 +182,20 @@ public class MainController {
 		app.setStatus("Applied");
 		app.setUser(u);
 		
-		if(session.getAttribute("loggedInUser")!=null){
-			session.removeAttribute("loggedInUser");
-			session.setAttribute("loggedInUser", u);
-		}
+		setSession(request, u);
 		
 		appservice.insertPosition(app);
 		
 		return new ModelAndView("landing","appres",appservice.fetchAllApps(u)).addObject("userDetails", u);
 	}
 	
-	@RequestMapping(value = "/personalDetail.htm", method = RequestMethod.GET)
-	public ModelAndView personalDetailPage(HttpServletRequest request) {
-		HttpSession session = request.getSession();
-		User u = (User) session.getAttribute("loggedInUser");
-		
-		return new ModelAndView("personalDetails","userInfo",u);
-	}
-	
 	@RequestMapping(value = "/updateUser.htm", method = RequestMethod.POST)
 	public ModelAndView updateDetail(@ModelAttribute User user, HttpServletRequest request) {
-		HttpSession session = request.getSession();
-		User existingDetail = (User) session.getAttribute("loggedInUser"); 
+		Object res = checkSession(request);
+		if(res.getClass()!=User.class){
+			return new ModelAndView("index","credentials",new User()).addObject("sessionMessage","Session Timeout, please login again!");
+		}
+		User existingDetail = (User) res;
 		
 		user.setAnother_email(existingDetail.getAnother_email());
 		user.setUserid(existingDetail.getUserid());
@@ -193,25 +203,18 @@ public class MainController {
 		user.setUname(existingDetail.getUname());
 		
 		uservice.updateUser(user);
-		
-		session.removeAttribute("loggedInUser");
-		session.setAttribute("loggedInUser", user);
+		setSession(request, user);
 		
 		return new ModelAndView("landing","appres",appservice.fetchAllApps(user)).addObject("userDetails", user);
 	}
 	
-	@RequestMapping(value = "/manageResume.htm", method = RequestMethod.GET)
-	public ModelAndView manageResumePage(HttpServletRequest request) {
-		HttpSession session = request.getSession();
-		User u = (User) session.getAttribute("loggedInUser");
-		
-		return new ModelAndView("manageResume","resumes",uservice.getAllResumes(u)).addObject("newResume", new Resume());
-	}
-	
 	@RequestMapping(value = "/saveResume.htm", method = RequestMethod.POST)
 	public ModelAndView addNewResume(@ModelAttribute Resume resume, HttpServletRequest request) {
-		HttpSession session = request.getSession();
-		User u = (User) session.getAttribute("loggedInUser");
+		Object res = checkSession(request);
+		if(res.getClass()!=User.class){
+			return new ModelAndView("index","credentials",new User()).addObject("sessionMessage","Session Timeout, please login again!");
+		}
+		User u = (User) res;
 		
 		resume.setRes_date(new SimpleDateFormat("dd/MM/yyyy").format(new Date()));
 		resume.setUser(u);
@@ -219,11 +222,6 @@ public class MainController {
 		uservice.addNewResume(resume);
 		
 		return new ModelAndView("manageResume","resumes",uservice.getAllResumes(u)).addObject("newResume", new Resume());
-	}
-	
-	@RequestMapping(value = "/signup.htm", method = RequestMethod.GET)
-	public ModelAndView signUpPage(HttpServletRequest request) {
-		return new ModelAndView("signup","newuser",new User());
 	}
 	
 	@RequestMapping(value = "/saveUser.htm", method = RequestMethod.POST)
@@ -234,8 +232,11 @@ public class MainController {
 	
 	@RequestMapping(value = "/changestatus.htm", method = RequestMethod.POST)
 	public ModelAndView updateStatus(HttpServletRequest request) {
-		HttpSession session = request.getSession();
-		User user = (User) session.getAttribute("loggedInUser");
+		Object res = checkSession(request);
+		if(res.getClass()!=User.class){
+			return new ModelAndView("index","credentials",new User()).addObject("sessionMessage","Session Timeout, please login again!");
+		}
+		User user = (User) res;
 		
 		Application app = appservice.findApplication(Integer.parseInt(request.getParameter("app_id")));
 		String new_stage = request.getParameter("job_stage");
@@ -246,5 +247,17 @@ public class MainController {
 		return new ModelAndView("landing","appres",appservice.fetchAllApps(user)).addObject("userDetails", user);
 	}
 	
+	@RequestMapping(value = "/deleteApp.htm", method = RequestMethod.GET)
+	public ModelAndView deleteApp(HttpServletRequest request) {
+		Object res = checkSession(request);
+		if(res.getClass()!=User.class){
+			return new ModelAndView("index","credentials",new User()).addObject("sessionMessage","Session Timeout, please login again!");
+		}
+		User user = (User) res;
+		
+		int app_id = Integer.parseInt(request.getParameter("var"));
+		appservice.deleteApplication(app_id);
+		return new ModelAndView("landing","appres",appservice.fetchAllApps(user)).addObject("userDetails", user);
+	}
 	
 }

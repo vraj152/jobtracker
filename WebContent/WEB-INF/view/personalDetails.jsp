@@ -23,10 +23,12 @@
 			<br><br>
 			
 			<input type="submit" value="Update Details"/> <br>
-			
 		</f:form>
 	
+		<br><br><br>
+		
+		<a href="homePage.htm"> Go back to home page. </a>
+	
 	</center>
-
 </body>
 </html>

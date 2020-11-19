@@ -15,4 +15,12 @@ public class JobService {
 	public void insertJob(Job job){
 		jdao.insertJob(job);
 	}
+	
+	public void updateJob(Job job){
+		jdao.updateJob(job);
+	}
+	
+	public Object validateJob(Job job){
+		return jdao.validateJob(job);
+	}
 }

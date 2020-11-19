@@ -39,12 +39,13 @@
 	<f:form action="saveResume.htm" modelAttribute="newResume" method="POST">
 		<label> Resume Name: </label> <f:input path="res_name"/> <br>
 		<label> Resume URL: </label> <f:input path="res_url"/> <br>
-		
-		<br>
-		<br>
+		<br><br>
 		
 		<input type="submit" value="Add Resume">
 	</f:form>
+	<br><br><br>
+	<a href="homePage.htm"> Go back to home page. </a>
+	
 </center>
 </body>
 </html>

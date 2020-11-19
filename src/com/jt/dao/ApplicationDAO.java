@@ -77,4 +77,18 @@ public class ApplicationDAO {
 		return app;
 	}
 	
+	public void deleteApplication(int app_id){
+		try {
+			Session session = sessionf.openSession();
+			Transaction tr = session.beginTransaction();
+			
+			Application appToDelete  = findApplication(app_id);
+			session.delete(appToDelete);
+			
+			tr.commit();
+			session.close();
+		} catch (Exception e) {
+			System.out.println(e.getMessage());
+		}
+	}
 }
