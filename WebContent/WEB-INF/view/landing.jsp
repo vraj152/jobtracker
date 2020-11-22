@@ -86,7 +86,7 @@
 						<li class="user-profile header-notification">
 							<div class="dropdown-primary dropdown">
 								<div class="dropdown-toggle" data-toggle="dropdown">
-									<img src="resources/jpg/avatar-4.jpg" class="img-radius" alt="User-Profile-Image">
+									<img src="${userDetails.photo }" class="img-radius" alt="User-Profile-Image">
 									<span>${userDetails.fname } ${userDetails.lname }</span>
 									<i class="feather icon-chevron-down"></i>
 								</div>

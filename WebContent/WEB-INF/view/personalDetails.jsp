@@ -59,7 +59,7 @@
 						<li class="user-profile header-notification">
 							<div class="dropdown-primary dropdown">
 								<div class="dropdown-toggle" data-toggle="dropdown">
-									<img src="resources/jpg/avatar-4.jpg" class="img-radius" alt="User-Profile-Image">
+									<img src="${userInfo.photo }" class="img-radius" alt="User-Profile-Image">
 									<span>${userInfo.fname } ${userInfo.lname }</span>
 									<i class="feather icon-chevron-down"></i>
 								</div>
@@ -149,7 +149,7 @@
 										<div class="col-sm-12">
 											<div class="card">
 												<div class="card-block">
-													<f:form action="updateUser.htm" modelAttribute="userInfo" method="POST">
+													<f:form action="updateUser.htm" modelAttribute="userInfo" method="POST" enctype="multipart/form-data">
 														<div class="form-group row">
 															<label class="col-sm-2 col-form-label">First Name</label>
 															<div class="col-sm-10">
@@ -178,6 +178,12 @@
 															<label class="col-sm-2 col-form-label">Primary Email</label>
 															<div class="col-sm-10">
 																<f:input type="text" class="form-control form-control-round" path="primary_email" readonly="True"/>
+															</div>
+														</div>
+														<div class="form-group row">
+															<label class="col-sm-2 col-form-label">Profile Picture</label>
+															<div class="col-sm-10">
+																<input type="file" name="file" class="form-control form-control-round" accept=".png, .jpg, .jpeg">
 															</div>
 														</div>
 														<div class="form-group row"> 

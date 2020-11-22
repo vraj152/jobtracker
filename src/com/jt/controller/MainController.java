@@ -57,8 +57,8 @@ public class MainController {
 	ResumeService rservice;
 	
 	private static final int thumb = 3;
-	private static String accessKey = "AKIAJXFVQ3CIKTV3FQWA";
-	private static String secretKey = "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";
+	private static String accessKey = "";
+	private static String secretKey = "";
 	
 	public static Object checkSession(HttpServletRequest request){
 		HttpSession session = request.getSession();
@@ -220,16 +220,31 @@ public class MainController {
 	}
 	
 	@RequestMapping(value = "/updateUser.htm", method = RequestMethod.POST)
-	public ModelAndView updateDetail(@ModelAttribute User user, HttpServletRequest request) {
+	public ModelAndView updateDetail(@ModelAttribute User user, @RequestParam("file") CommonsMultipartFile file, HttpServletRequest request) {
 		Object res = checkSession(request);
 		if(res.getClass()!=User.class){
 			return new ModelAndView("index","credentials",new User()).addObject("sessionMessage","Session Timeout, please login again!");
 		}
 		User existingDetail = (User) res;
 		
+		String profile_picture = "resources/jpg/avatar-4.jpg";
+		
+		if(file != null & file.getOriginalFilename().length() > 0){
+			AWSCredentials awsCredentials = new BasicAWSCredentials(accessKey, secretKey);
+			AmazonS3Client c = new AmazonS3Client(awsCredentials);
+			
+			String file_name = existingDetail.getUname() + "_avatar";
+			
+			String file_path = existingDetail.getUname() + "/" + file_name;
+			String bucketName = "resumejobtracker";
+			
+			c.putObject(new PutObjectRequest(bucketName, file_path ,rservice.convert(file)).withCannedAcl(CannedAccessControlList.PublicRead));
+			profile_picture = c.getResourceUrl(bucketName, file_path);
+		}
+		
 		user.setAnother_email(existingDetail.getAnother_email());
 		user.setUserid(existingDetail.getUserid());
-		user.setPhoto(existingDetail.getPhoto());
+		user.setPhoto(profile_picture);
 		user.setUname(existingDetail.getUname());
 		
 		uservice.updateUser(user);
@@ -280,6 +295,7 @@ public class MainController {
 	
 	@RequestMapping(value = "/saveUser.htm", method = RequestMethod.POST)
 	public ModelAndView saveUser(@ModelAttribute User user, HttpServletRequest request) {
+		user.setPhoto("resources/jpg/avatar-4.jpg");
 		uservice.addNewUser(user);
 		return new ModelAndView("index","credentials",new User());
 	}
