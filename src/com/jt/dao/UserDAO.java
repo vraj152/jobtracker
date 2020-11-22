@@ -42,25 +42,6 @@ public class UserDAO {
 		return response;
 	}
 	
-	public List<Resume> getAllResumes(User user){
-		List<Resume> uList = null;
-		
-		try
-		{
-			Session session = sessionf.openSession();
-			Query q = session.createQuery("from Resume where user_id='"+user.getUserid()+"'");
-			uList = q.list();
-			
-			session.close();
-		}
-		catch(Exception e)
-		{
-			e.printStackTrace();
-		}
-		
-		return uList;
-	}
-	
 	public void updateUser(User user){
 		try 
 		{
@@ -72,18 +53,6 @@ public class UserDAO {
 		}
 		catch (Exception e)
 		{
-			System.out.println(e.getMessage());
-		}
-	}
-	
-	public void addNewResume(Resume res){
-		try{
-			Session session = sessionf.openSession();
-			Transaction tr = session.beginTransaction();
-			session.save(res);
-			tr.commit();
-			session.close();
-		}catch (Exception e){
 			System.out.println(e.getMessage());
 		}
 	}

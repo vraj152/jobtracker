@@ -26,7 +26,7 @@ public class JobDAO {
 			tr.commit();
 			session.close();
 		} catch (Exception e) {
-			System.out.println(e.getMessage());
+			e.printStackTrace();
 		}
 	}
 	
@@ -38,7 +38,7 @@ public class JobDAO {
 			tr.commit();
 			session.close();
 		} catch (Exception e) {
-			System.out.println(e.getMessage());
+			e.printStackTrace();
 		}
 	}
 	

@@ -13,6 +13,7 @@ import com.jt.entity.Resume;
 import com.jt.entity.User;
 import com.jt.service.ApplicationService;
 import com.jt.service.JobService;
+import com.jt.service.ResumeService;
 import com.jt.service.UserService;
 
 /*
@@ -30,6 +31,9 @@ public class NavigationController {
 	
 	@Autowired
 	JobService jservice;
+	
+	@Autowired
+	ResumeService rservice;
 	
 	public static void setSession(HttpServletRequest request, User user){
 		HttpSession session = request.getSession();
@@ -78,12 +82,23 @@ public class NavigationController {
 		}
 		User u = (User) res;
 		
-		return new ModelAndView("manageResume","resumes",uservice.getAllResumes(u)).addObject("newResume", new Resume());
+		return new ModelAndView("manageResume","resumes",rservice.getAllResumes(u)).addObject("newResume", new Resume());
 	}
 
 	@RequestMapping(value = "/signup.htm", method = RequestMethod.GET)
 	public ModelAndView signUpPage(HttpServletRequest request) {
 		return new ModelAndView("signup","newuser",new User());
+	}
+	
+	@RequestMapping(value = "/logout.htm", method = RequestMethod.GET)
+	public ModelAndView logoutPage(HttpServletRequest request) {
+		Object res = checkSession(request);
+		if(res.getClass()==User.class){
+			request.getSession().removeAttribute("loggedInUser");
+			return new ModelAndView("index","credentials",new User()).addObject("sessionMessage","Successfully logged out!");
+		}else{
+			return new ModelAndView("index","credentials",new User());
+		}
 	}
 	
 }

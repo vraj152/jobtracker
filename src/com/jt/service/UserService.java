@@ -19,16 +19,8 @@ public class UserService {
 		return udao.validateUser(uname, pwd);
 	}	
 	
-	public List<Resume> getAllResumes(User user){
-		return udao.getAllResumes(user);
-	}
-	
 	public void updateUser(User user){
 		udao.updateUser(user);
-	}
-	
-	public void addNewResume(Resume res){
-		udao.addNewResume(res);
 	}
 	
 	public void addNewUser(User user){

@@ -1,6 +1,7 @@
 package com.jt.controller;
 
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
@@ -8,6 +9,7 @@ import java.text.SimpleDateFormat;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
@@ -20,6 +22,8 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.multipart.commons.CommonsMultipartFile;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.jt.entity.Application;
@@ -28,7 +32,14 @@ import com.jt.entity.Resume;
 import com.jt.entity.User;
 import com.jt.service.ApplicationService;
 import com.jt.service.JobService;
+import com.jt.service.ResumeService;
 import com.jt.service.UserService;
+import com.amazonaws.auth.AWSCredentials;
+import com.amazonaws.auth.BasicAWSCredentials;
+import com.amazonaws.regions.Regions;
+import com.amazonaws.services.s3.AmazonS3Client;
+import com.amazonaws.services.s3.model.CannedAccessControlList;
+import com.amazonaws.services.s3.model.PutObjectRequest;
 
 @Controller
 public class MainController {
@@ -41,6 +52,13 @@ public class MainController {
 	
 	@Autowired
 	JobService jservice;
+	
+	@Autowired
+	ResumeService rservice;
+	
+	private static final int thumb = 3;
+	private static String accessKey = "AKIAJXFVQ3CIKTV3FQWA";
+	private static String secretKey = "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";
 	
 	public static Object checkSession(HttpServletRequest request){
 		HttpSession session = request.getSession();
@@ -81,7 +99,7 @@ public class MainController {
 		
 		Map<String, Object> models = new HashMap<String, Object>();
 		
-		models.put("resumes", uservice.getAllResumes(u));
+		models.put("resumes", rservice.getAllResumes(u));
 		models.put("positionDetails", new Application());
 		models.put("userinfo", u);
 		
@@ -90,40 +108,13 @@ public class MainController {
 	
 	@RequestMapping(value = "/save_job.htm", method = RequestMethod.POST)
 	public ModelAndView saveJobDetails(@ModelAttribute Application app,HttpServletRequest request) {
-		String baseURL = "http://localhost:5000/";
-		String endPoint = "getData?";
-		JSONObject myResponse = null;
-		
-		try{
-	    	URL url = new URL(baseURL + endPoint + "url=" + app.getJob().getUrl());
-	    	HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-	    	conn.setRequestMethod("GET");
-            
-            if (conn.getResponseCode() != 200) {
-                throw new RuntimeException("Failed : HTTP Error code : " + conn.getResponseCode());
-            }
-            
-            BufferedReader in = new BufferedReader(new InputStreamReader(conn.getInputStream()));
-            String inputLine;
-            StringBuffer sb = new StringBuffer();
-            while ((inputLine = in.readLine()) != null) {
-            	sb.append(inputLine);
-            }
-            in.close();
-            
-            myResponse = new JSONObject(sb.toString());
-            conn.disconnect();
-	    }catch(Exception e){
-	    	System.out.println(e.getMessage());
-	    }
-
 		Object res = checkSession(request);
 		if(res.getClass()!=User.class){
 			return new ModelAndView("index","credentials",new User()).addObject("sessionMessage","Session Timeout, please login again!");
 		}
 		User u = (User) res;
-				
-		Job currentJob = app.getJob();
+		
+		String jobBoard = request.getParameter("jobboard");
 		
 		String job_desc = "Not available";
 		String job_title = "Not available";
@@ -131,22 +122,61 @@ public class MainController {
 		String req_id = "Couldn't find";
 		String location = "Not available";
 		
-		try{
-			if(myResponse!=null & myResponse.get("message").equals("Data found")){
-				job_desc = (String) myResponse.get("job_desc");
-				job_title = (String) myResponse.get("job_title");
-				
-				if(((String) myResponse.get("date_posted")).length()>0){
-					date_posted = (String) myResponse.get("date_posted");
+		Job currentJob = app.getJob();
+		
+		if(jobBoard.equals("0")){
+			String baseURL = "http://localhost:5000/";
+			String endPoint = "getData?";
+			JSONObject myResponse = null;
+			
+			try{
+		    	URL url = new URL(baseURL + endPoint + "url=" + app.getJob().getUrl());
+		    	HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+		    	conn.setRequestMethod("GET");
+	            
+	            if (conn.getResponseCode() != 200) {
+	                throw new RuntimeException("Failed : HTTP Error code : " + conn.getResponseCode());
+	            }
+	            
+	            BufferedReader in = new BufferedReader(new InputStreamReader(conn.getInputStream()));
+	            String inputLine;
+	            StringBuffer sb = new StringBuffer();
+	            while ((inputLine = in.readLine()) != null) {
+	            	sb.append(inputLine);
+	            }
+	            in.close();
+	            
+	            myResponse = new JSONObject(sb.toString());
+	            conn.disconnect();
+		    }catch(Exception e){
+		    	System.out.println(e.getMessage());
+		    }
+
+			try{
+				if(myResponse!=null & myResponse.get("message").equals("Data found")){
+					job_desc = (String) myResponse.get("job_desc");
+					job_title = (String) myResponse.get("job_title");
+					
+					if(((String) myResponse.get("date_posted")).length()>0){
+						date_posted = (String) myResponse.get("date_posted");
+					}
+					
+					if(((String) myResponse.get("req_id")).length()>0){
+						req_id = (String) myResponse.get("req_id");
+					}
+					location = (String) myResponse.get("location");
 				}
-				
-				if(((String) myResponse.get("req_id")).length()>0){
-					req_id = (String) myResponse.get("req_id");
-				}
-				location = (String) myResponse.get("location");
+			}catch(Exception e){
+				System.out.println(e.getMessage());
 			}
-		}catch(Exception e){
-			System.out.println(e.getMessage());
+		}else{
+			job_desc = request.getParameter("jd");
+			job_title = request.getParameter("position");
+			date_posted = request.getParameter("date_post");
+			req_id = request.getParameter("req_id");
+			location = request.getParameter("location");
+			System.out.println("else");
+			System.out.println(job_desc + " " + job_title + " " + date_posted + " " + req_id + " " + location);
 		}
 		
 		currentJob.setJob_desc(job_desc);
@@ -209,7 +239,7 @@ public class MainController {
 	}
 	
 	@RequestMapping(value = "/saveResume.htm", method = RequestMethod.POST)
-	public ModelAndView addNewResume(@ModelAttribute Resume resume, HttpServletRequest request) {
+	public ModelAndView addNewResume(@ModelAttribute Resume resume, @RequestParam("file") List<CommonsMultipartFile> file, HttpServletRequest request) {
 		Object res = checkSession(request);
 		if(res.getClass()!=User.class){
 			return new ModelAndView("index","credentials",new User()).addObject("sessionMessage","Session Timeout, please login again!");
@@ -219,9 +249,33 @@ public class MainController {
 		resume.setRes_date(new SimpleDateFormat("dd/MM/yyyy").format(new Date()));
 		resume.setUser(u);
 		
-		uservice.addNewResume(resume);
+		String objectUrl = "";
 		
-		return new ModelAndView("manageResume","resumes",uservice.getAllResumes(u)).addObject("newResume", new Resume());
+		AWSCredentials awsCredentials = new BasicAWSCredentials(accessKey, secretKey);
+		AmazonS3Client c = new AmazonS3Client(awsCredentials);
+		
+		for(int j=0; j<file.size(); j++){
+			String file_name = "";
+			
+			if(resume.getRes_name().length() > 0){
+				file_name = resume.getRes_name();
+			}else{
+				file_name = file.get(j).getOriginalFilename();
+			}
+			
+			String file_path = u.getUname() + "/" + file_name;
+			String bucketName = "resumejobtracker";
+			
+			c.putObject(new PutObjectRequest(bucketName, file_path ,rservice.convert(file.get(j))).withCannedAcl(CannedAccessControlList.PublicRead));
+			objectUrl = c.getResourceUrl(bucketName, file_path);
+			
+			resume.setRes_name(file_name);
+			resume.setRes_url(objectUrl);
+			resume.setRes_path(file_path);
+			rservice.addNewResume(resume);
+		}
+		
+		return new ModelAndView("manageResume","resumes",rservice.getAllResumes(u)).addObject("newResume", new Resume());
 	}
 	
 	@RequestMapping(value = "/saveUser.htm", method = RequestMethod.POST)

@@ -26,6 +26,17 @@ public class Resume {
 	@Column
 	private String res_date;
 	
+	@Column
+	private String res_path;
+	
+	public String getRes_path() {
+		return res_path;
+	}
+
+	public void setRes_path(String res_path) {
+		this.res_path = res_path;
+	}
+
 	@ManyToOne
 	@JoinColumn(name = "user_id")
 	User user;
